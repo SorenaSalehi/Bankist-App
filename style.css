@@ -57,6 +57,7 @@ body {
   border-radius: 20px;
   cursor: pointer;
   outline: none;
+  background-color: rgba(214, 214, 214, 0.447);
 }
 .login__input:focus {
   background-color: lightgray;

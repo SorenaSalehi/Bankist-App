@@ -105,7 +105,7 @@ body {
   background-color: #fff;
 }
 
-.movement {
+.movements--row {
   display: flex;
   justify-content: space-between;
   padding: 20px;
@@ -114,8 +114,8 @@ body {
   text-transform: uppercase;
 }
 
-.movement:last-child {
-  border-bottom: none;
+.movements--row:last-child {
+  border: none;
 }
 
 .deposit-number {

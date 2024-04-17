@@ -223,6 +223,7 @@ body {
 }
 
 .operation-loan .operation-form {
+  grid-template-columns: 2.5fr 1fr;
   grid-template-areas:
     "amount submit"
     "label-amount .";

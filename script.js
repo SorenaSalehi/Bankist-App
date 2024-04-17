@@ -44,6 +44,7 @@ const labelTimer = document.querySelector(".timer");
 
 const containerApp = document.querySelector(".app");
 const containerMovements = document.querySelector(".movements");
+const balanceLabel = document.querySelector(".balance-value");
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -62,6 +63,14 @@ const displayMovements = function (movements) {
     containerMovements.insertAdjacentHTML("afterbegin", html);
     //for insert the html element
   });
+
+  //accumulating the balance..........................
+  const calcDisplayBalance = function (movements) {
+    const balance = movements.reduce((acc, mov) => acc + mov, 0);
+    balanceLabel.textContent = `${balance}€`;
+  };
+
+  calcDisplayBalance(account1.movements);
 };
 
 displayMovements(account1.movements);

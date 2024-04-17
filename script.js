@@ -40,6 +40,7 @@ const labelBalance = document.querySelector(".balance-value");
 const labelSumIn = document.querySelector(".value-in");
 const labelSumOut = document.querySelector(".value-out");
 const labelSumInterest = document.querySelector(".value-interest");
+console.log(labelSumInterest);
 const labelTimer = document.querySelector(".timer");
 
 const containerApp = document.querySelector(".app");
@@ -58,7 +59,7 @@ const displayMovements = function (movements) {
 
     const html = `  <div class="movements--row movement--${type}">
     <div class="${type}-number">${index + 1} ${type}</div>
-    <div class="${type}-value">${mov}</div>`;
+    <div class="${type}-value">${mov} €</div>`;
 
     containerMovements.insertAdjacentHTML("afterbegin", html);
     //for insert the html element
@@ -71,6 +72,31 @@ const displayMovements = function (movements) {
   };
 
   calcDisplayBalance(account1.movements);
+
+  //displaying the summary in the html
+  const calcDisplaySummery = function (movements) {
+    const incomes = movements
+      .filter((mov) => mov > 0)
+      .reduce((acc, mov) => acc + mov, 0);
+
+    const outcomes = movements
+      .filter((mov) => mov < 0)
+      .reduce((acc, mov) => acc + mov, 0);
+
+    const interest = movements
+      .filter((mov) => mov > 0) // Filter out positive movements (deposits)
+      .map((deposit) => (deposit * 1.2) / 100) // Calculate interest for each deposit
+      .filter((int) => int >= 1) // Filter out interest amounts less than 1
+      .reduce((acc, mov) => acc + mov, 0); // Sum up the interests
+    console.log(interest);
+
+    labelSumIn.textContent = `${incomes}€`;
+    labelSumOut.textContent = `${Math.abs(outcomes)}€`;
+
+    labelSumInterest.textContent = `${interest}€`;
+  };
+
+  calcDisplaySummery(account1.movements);
 };
 
 displayMovements(account1.movements);

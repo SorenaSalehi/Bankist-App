@@ -7,32 +7,31 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <div id="navbar">
+      <h1 class="welcome">Log in to get started</h1>
+      <img src="logo.png" alt="logo" class="logo" />
+      <form class="login">
+        <label for="user">
+          <input
+            type="text"
+            placeholder="user"
+            class="login__input login__input--user"
+            required
+          />
+        </label>
+        <label for="pin">
+          <input
+            type="password"
+            placeholder="PIN"
+            maxlength="4"
+            class="login__input login__input--pin"
+            required
+          />
+        </label>
+        <button class="login__btn">&rarr;</button>
+      </form>
+    </div>
     <div id="content">
-      <div id="navbar">
-        <h1 class="welcome">Log in to get started</h1>
-        <img src="logo.png" alt="logo" class="logo" />
-        <form class="login">
-          <label for="user">
-            <input
-              type="text"
-              placeholder="user"
-              class="login__input login__input--user"
-              required
-            />
-          </label>
-          <label for="pin">
-            <input
-              type="password"
-              placeholder="PIN"
-              maxlength="4"
-              class="login__input login__input--pin"
-              required
-            />
-          </label>
-          <button class="login__btn">&rarr;</button>
-        </form>
-      </div>
-
       <!--header           -->
 
       <div id="header">
@@ -68,15 +67,12 @@
           <h3 class="operation-label">Transfer money</h3>
           <form class="operation-form">
             <label for=" ">
-              <input type="text" class="operation-input operation-input--to" />
+              <input type="text" class="operation-input transfer--to" />
             </label>
             <label for="">
-              <input
-                type="number"
-                class="operation-input operation-input--amount"
-              />
+              <input type="number" class="operation-input transfer--amount" />
             </label>
-            <button class="operation-submit">&rarr;</button>
+            <button class="operation-submit btn--transfer">&rarr;</button>
             <label class="operation-label operation-label-to"
               >Transfer to</label
             >
@@ -90,12 +86,9 @@
           <h3 class="operation-label">Request loan</h3>
           <form class="operation-form">
             <label for="">
-              <input
-                type="number"
-                class="operation-input operation-input--amount"
-              />
+              <input type="number" class="operation-input loan--amount" />
             </label>
-            <button class="operation-submit">&rarr;</button>
+            <button class="operation-submit btn--loan">&rarr;</button>
             <label class="operation-label operation-label-amount">Amount</label>
           </form>
         </div>
@@ -105,16 +98,13 @@
         <div class="operation operation-close">
           <h3 class="operation-label">Close account</h3>
           <form class="operation-form">
-            <label for=" ">
-              <input type="text" class="operation-input operation-input-user" />
+            <label for="">
+              <input type="text" class="operation-input close-user" />
             </label>
             <label for="">
-              <input
-                type="number"
-                class="operation-input operation-input--pin"
-              />
+              <input type="number" class="operation-input close--pin" />
             </label>
-            <button class="operation-submit">&rarr;</button>
+            <button class="operation-submit btn--close">&rarr;</button>
             <label class="operation-label operation-label-to"
               >Confirm user</label
             >

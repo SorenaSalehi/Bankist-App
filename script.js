@@ -193,3 +193,49 @@ btnTransfer.addEventListener("click", function (e) {
     displayUI(currentAccount);
   }
 });
+
+//requesting loan
+btnLoan.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+  //if the amount is greater than 0 and one of the movements is greater than 10% of the amount
+  if (
+    amount > 0 &&
+    currentAccount.movements.some((mov) => mov >= amount * 0.1)
+  ) {
+    //add movement
+    currentAccount.movements.push(amount);
+    //update UI
+    displayUI(currentAccount);
+  }
+
+  inputLoanAmount.value = "";
+  inputLoanAmount.blur();
+});
+
+//closing the account
+btnClose.addEventListener("click", function (e) {
+  e.preventDefault();
+
+  if (
+    currentAccount.username === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)
+  ) {
+    //find the index
+    const index = accounts.findIndex(
+      (acc) => acc.username === currentAccount.username
+    );
+
+    //delete the account
+    //TIP: this will return the new array , so there is no need to assign it to the new variable
+    accounts.splice(index, 1);
+
+    //hide UI
+    containerApp.style.opacity = 0;
+  }
+
+  inputCloseUsername.value = inputClosePin.value = "";
+  inputClosePin.blur();
+  LabelWelcome.textContent = "Log in to get started";
+});

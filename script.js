@@ -95,11 +95,15 @@ const displayUI = function (account) {
 };
 
 //displaing the movements in the html
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
+  //TIP : i set the sort defualt value to false , cause i want to display the movements in the original order
   containerMovements.innerHTML = "";
   //for empty the html element
 
-  movements.forEach(function (mov, index) {
+  //using the slice method to creat a copy of the array
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements; //if sort is true than sort the movements from low to high else display the movements in the original order
+
+  movs.forEach(function (mov, index) {
     const type = mov > 0 ? "deposit" : "withdrawal";
 
     const html = `  <div class="movements--row movement--${type}">
@@ -238,4 +242,14 @@ btnClose.addEventListener("click", function (e) {
   inputCloseUsername.value = inputClosePin.value = "";
   inputClosePin.blur();
   LabelWelcome.textContent = "Log in to get started";
+});
+
+//sorting the movements
+let sorted = false; //set the defualt value to false cause i want to now the movements is sorted or not to cahnge it
+btnSort.addEventListener("click", function (e) {
+  e.preventDefault();
+  // console.log("clicked");
+  displayMovements(currentAccount.movements, !sorted); //using the NOT operator to change the value of sorted
+
+  sorted = !sorted; //and again change the value after each CLICK
 });

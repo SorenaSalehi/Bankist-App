@@ -6,6 +6,18 @@ const account1 = {
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
+  movementsDates: [
+    "2019-11-18T21:31:17.178Z",
+    "2019-12-23T07:42:02.383Z",
+    "2020-01-28T09:15:04.904Z",
+    "2020-04-01T10:17:24.185Z",
+    "2020-05-08T14:11:59.604Z",
+    "2020-07-26T17:01:17.194Z",
+    "2021-04-14T23:36:17.929Z",
+    "2021-04-20T10:51:36.790Z",
+  ],
+  currency: "EUR",
+  locale: "pt-PT", // de-DE
 };
 
 const account2 = {
@@ -13,6 +25,18 @@ const account2 = {
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
+  movementsDates: [
+    "2019-11-01T13:15:33.035Z",
+    "2019-11-30T09:48:16.867Z",
+    "2019-12-25T06:04:23.907Z",
+    "2020-01-25T14:18:46.235Z",
+    "2020-02-05T16:33:06.386Z",
+    "2020-04-10T14:43:26.374Z",
+    "2021-04-18T18:49:59.371Z",
+    "2021-04-16T12:01:20.894Z",
+  ],
+  currency: "USD",
+  locale: "en-US",
 };
 
 const account3 = {
@@ -20,6 +44,18 @@ const account3 = {
   movements: [200, -200, 340, -300, -20, 50, 400, -460],
   interestRate: 0.7,
   pin: 3333,
+  movementsDates: [
+    "2010-06-25T14:19:59.371Z",
+    "2011-01-01T15:15:43.035Z",
+    "2016-07-26T12:01:20.894Z",
+    "2018-11-30T09:08:16.867Z",
+    "2019-02-25T06:04:23.907Z",
+    "2020-04-10T14:43:26.374Z",
+    "2021-01-05T04:18:46.235Z",
+    "2021-02-25T16:33:36.386Z",
+  ],
+  currency: "DKK",
+  locale: "da-DK",
 };
 
 const account4 = {
@@ -27,6 +63,15 @@ const account4 = {
   movements: [430, 1000, 700, 50, 90],
   interestRate: 1,
   pin: 4444,
+  movementsDates: [
+    "2015-04-01T10:17:24.185Z",
+    "2016-05-08T14:11:59.604Z",
+    "2017-07-26T17:01:17.194Z",
+    "2019-12-23T07:42:02.383Z",
+    "2021-01-28T09:15:04.904Z",
+  ],
+  currency: "SYP",
+  locale: "syr-SY",
 };
 
 const accounts = [account1, account2, account3, account4];
@@ -35,7 +80,7 @@ const accounts = [account1, account2, account3, account4];
 
 const LabelWelcome = document.querySelector(".welcome");
 
-const labelDate = document.querySelector(".balance-date");
+const labelDate = document.querySelector(".balance-date-label");
 const labelBalance = document.querySelector(".balance-value");
 const labelSumIn = document.querySelector(".value-in");
 const labelSumOut = document.querySelector(".value-out");
@@ -62,6 +107,15 @@ const inputClosePin = document.querySelector(".close--pin");
 
 //////////////////////////////////////////////////////////////////////////////
 
+//get time.................
+const now = new Date();
+const year = now.getFullYear();
+const month = `${now.getMonth() + 1}`.padStart(2, 0);
+const day = `${now.getDate()}`.padStart(2, 0);
+const hour = now.getHours();
+const minute = `${now.getMinutes()}`.padStart(2, 0);
+labelDate.textContent = `${day}/${month}/${year}, ${hour}:${minute}`;
+
 //creating the account user name
 
 //step 1 :
@@ -87,7 +141,7 @@ console.log(accounts);
 //function for display the movements in the html
 const displayUI = function (account) {
   //display movements
-  displayMovements(account.movements);
+  displayMovements(account);
   //display balance
   calcDisplayBalance(account);
   //display summary
@@ -95,25 +149,35 @@ const displayUI = function (account) {
 };
 
 //displaing the movements in the html
-const displayMovements = function (movements, sort = false) {
+const displayMovements = function (acc, sort = false) {
   //TIP : i set the sort defualt value to false , cause i want to display the movements in the original order
   containerMovements.innerHTML = "";
   //for empty the html element
 
   //using the slice method to creat a copy of the array
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements; //if sort is true than sort the movements from low to high else display the movements in the original order
+  const movs = sort
+    ? acc.movements.slice().sort((a, b) => a - b)
+    : acc.movements; //if sort is true than sort the movements from low to high else display the movements in the original order
+  console.log(movs);
 
   movs.forEach(function (mov, index) {
     const type = mov > 0 ? "deposit" : "withdrawal";
+    const date = new Date(acc.movementsDates[index]);
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    const day = `${date.getDate()}`.padStart(2, 0);
 
+    const displayDate = `${day}/${month}/${year}`;
     const html = `  <div class="movements--row movement--${type}">
     <div class="${type}-number">${index + 1} ${type}</div>
+     <div class="${type}-date">${displayDate}</div>
     <div class="${type}-value">${mov.toFixed(2)} €</div>`;
 
     containerMovements.insertAdjacentHTML("afterbegin", html);
     //for insert the html element
   });
 };
+
 //accumulating the balance..........................
 
 const calcDisplayBalance = function (account) {
@@ -123,8 +187,6 @@ const calcDisplayBalance = function (account) {
 
 //displaying the summary in the html
 const calcDisplaySummery = function (account) {
-
-
   const incomes = account.movements
     .filter((mov) => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
@@ -195,6 +257,11 @@ btnTransfer.addEventListener("click", function (e) {
     //doing the transfer
     currentAccount.movements.push(-amount);
     receiverAcc.movements.push(amount);
+
+    //update the movements date
+    currentAccount.movementsDates.push(new Date().toISOString());
+    receiverAcc.movementsDates.push(new Date().toISOString());
+
     //update UI
     displayUI(currentAccount);
   }
@@ -212,6 +279,10 @@ btnLoan.addEventListener("click", function (e) {
   ) {
     //add movement
     currentAccount.movements.push(amount);
+
+    //update the movements date
+    currentAccount.movementsDates.push(new Date().toISOString());
+
     //update UI
     displayUI(currentAccount);
   }
@@ -251,7 +322,7 @@ let sorted = false; //set the defualt value to false cause i want to now the mov
 btnSort.addEventListener("click", function (e) {
   e.preventDefault();
   // console.log("clicked");
-  displayMovements(currentAccount.movements, !sorted); //using the NOT operator to change the value of sorted
+  displayMovements(currentAccount, !sorted); //using the NOT operator to change the value of sorted
 
   sorted = !sorted; //and again change the value after each CLICK
 });

@@ -12,9 +12,9 @@ const account1 = {
     "2020-01-28T09:15:04.904Z",
     "2020-04-01T10:17:24.185Z",
     "2020-05-08T14:11:59.604Z",
-    "2020-07-26T17:01:17.194Z",
-    "2021-04-14T23:36:17.929Z",
-    "2021-04-20T10:51:36.790Z",
+    "2024-06-24T17:01:17.194Z",
+    "2024-06-30T23:36:17.929Z",
+    "2024-07-01T10:51:36.790Z",
   ],
   currency: "EUR",
   locale: "pt-PT", // de-DE
@@ -109,12 +109,20 @@ const inputClosePin = document.querySelector(".close--pin");
 
 //get time.................
 const now = new Date();
-const year = now.getFullYear();
-const month = `${now.getMonth() + 1}`.padStart(2, 0);
-const day = `${now.getDate()}`.padStart(2, 0);
-const hour = now.getHours();
-const minute = `${now.getMinutes()}`.padStart(2, 0);
-labelDate.textContent = `${day}/${month}/${year}, ${hour}:${minute}`;
+// const year = now.getFullYear();
+// const month = `${now.getMonth() + 1}`.padStart(2, 0);
+// const day = `${now.getDate()}`.padStart(2, 0);
+// const hour = now.getHours();
+// const minute = `${now.getMinutes()}`.padStart(2, 0);
+// labelDate.textContent = `${day}/${month}/${year}, ${hour}:${minute}`;
+const options = {
+  hour: "numeric",
+  minute: "numeric",
+  day: "numeric",
+  month: "numeric",
+  year: "numeric",
+  // weekday: 'long',
+};
 
 //creating the account user name
 
@@ -137,6 +145,27 @@ const creatUsername = function (accs) {
 };
 creatUsername(accounts);
 console.log(accounts);
+
+//funtion movements dates
+const formatMovementsDays = function (locale, date) {
+  //return the days passed by absolute value
+  const calcDaysPassed = (date1, date2) =>
+    Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
+
+  const daysPassed = calcDaysPassed(new Date(), date);
+
+  //TIP: there is no problem with to much return, because when it return true , we want to finish the function
+  if (daysPassed === 0) return "Today";
+  if (daysPassed === 1) return "Yesterday";
+  if (daysPassed <= 7) return `${daysPassed} days ago`;
+
+  //and if the days passed is more than 7 then we want to display the date in the format : day/month/year
+  // const year = date.getFullYear();
+  //   const month = `${date.getMonth() + 1}`.padStart(2, 0);
+  //   const day = `${date.getDate()}`.padStart(2, 0);
+  // return `${day}/${month}/${year}`;
+  return new Intl.DateTimeFormat(locale).format(daysPassed);
+};
 
 //function for display the movements in the html
 const displayUI = function (account) {
@@ -163,11 +192,8 @@ const displayMovements = function (acc, sort = false) {
   movs.forEach(function (mov, index) {
     const type = mov > 0 ? "deposit" : "withdrawal";
     const date = new Date(acc.movementsDates[index]);
-    const year = date.getFullYear();
-    const month = `${date.getMonth() + 1}`.padStart(2, 0);
-    const day = `${date.getDate()}`.padStart(2, 0);
 
-    const displayDate = `${day}/${month}/${year}`;
+    const displayDate = formatMovementsDays(acc.locale, date);
     const html = `  <div class="movements--row movement--${type}">
     <div class="${type}-number">${index + 1} ${type}</div>
      <div class="${type}-date">${displayDate}</div>
@@ -175,6 +201,10 @@ const displayMovements = function (acc, sort = false) {
 
     containerMovements.insertAdjacentHTML("afterbegin", html);
     //for insert the html element
+    labelDate.textContent = new Intl.DateTimeFormat(
+      currentAccount.locale,
+      options
+    ).format(now);
   });
 };
 

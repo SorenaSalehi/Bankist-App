@@ -1,6 +1,6 @@
 "use strict";
 
-//DATA
+//DATA/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const account1 = {
   owner: "Jonas Schmedtmann",
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
@@ -76,8 +76,7 @@ const account4 = {
 
 const accounts = [account1, account2, account3, account4];
 
-// Elements
-
+// Elements ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const LabelWelcome = document.querySelector(".welcome");
 
 const labelDate = document.querySelector(".balance-date-label");
@@ -105,9 +104,11 @@ const inputLoanAmount = document.querySelector(".loan--amount");
 const inputCloseUsername = document.querySelector(".close--user");
 const inputClosePin = document.querySelector(".close--pin");
 
-//////////////////////////////////////////////////////////////////////////////
+//fundemetals /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+let currentAccount, Timer;
+let sorted = false; //set the defualt value to false cause i want to now the movements is sorted or not to cahnge it
 
-//get time.................
+//get time ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 const now = new Date();
 // const year = now.getFullYear();
 // const month = `${now.getMonth() + 1}`.padStart(2, 0);
@@ -124,8 +125,19 @@ const options = {
   // weekday: 'long',
 };
 
-//creating the account user name
+//functions //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//function for display the UI in the html ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+const displayUI = function (account) {
+  //display movements
+  displayMovements(account);
+  //display balance
+  calcDisplayBalance(account);
+  //display summary
+  calcDisplaySummery(account);
+};
+
+//creating the account user name ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //step 1 :
 //const acc = account4.owner.toLowercase().split(' ').map(name => name[0]).join('');
 
@@ -146,7 +158,16 @@ const creatUsername = function (accs) {
 creatUsername(accounts);
 console.log(accounts);
 
-//funtion movements dates
+//currency formater function ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+const currFormat = function (value, locale, currency) {
+  //value is what to shuild formated
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+  }).format(value);
+};
+
+//movements dates function ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 const formatMovementsDays = function (locale, date) {
   //return the days passed by absolute value
   const calcDaysPassed = (date1, date2) =>
@@ -167,17 +188,30 @@ const formatMovementsDays = function (locale, date) {
   return new Intl.DateTimeFormat(locale).format(daysPassed);
 };
 
-//function for display the movements in the html
-const displayUI = function (account) {
-  //display movements
-  displayMovements(account);
-  //display balance
-  calcDisplayBalance(account);
-  //display summary
-  calcDisplaySummery(account);
+//timer function ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+const startedTimerLogout = function () {
+  const tick = function () {
+    let min = String(Math.trunc(Time / 60)).padStart(2, 0);
+    let sec = String(Time % 60).padStart(2, 0);
+    labelTimer.textContent = `${min}:${sec}`;
+
+    //count down the timer
+    if (Time === 0) {
+      clearInterval(Timer);
+      //display UI and message
+      LabelWelcome.textContent = `Log i to get started`; //split the name and display only the first name
+      containerApp.style.opacity = 0;
+    }
+
+    //decrease the time
+    Time--;
+  };
+  let Time = 600;
+  const Timer = setInterval(tick, 1000);
+  return Timer;
 };
 
-//displaing the movements in the html
+//displaing the movements in the html --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 const displayMovements = function (acc, sort = false) {
   //TIP : i set the sort defualt value to false , cause i want to display the movements in the original order
   containerMovements.innerHTML = "";
@@ -194,10 +228,11 @@ const displayMovements = function (acc, sort = false) {
     const date = new Date(acc.movementsDates[index]);
 
     const displayDate = formatMovementsDays(acc.locale, date);
+    const curr = currFormat(mov, acc.locale, acc.currency);
     const html = `  <div class="movements--row movement--${type}">
     <div class="${type}-number">${index + 1} ${type}</div>
      <div class="${type}-date">${displayDate}</div>
-    <div class="${type}-value">${mov.toFixed(2)} €</div>`;
+    <div class="${type}-value">${curr}</div>`;
 
     containerMovements.insertAdjacentHTML("afterbegin", html);
     //for insert the html element
@@ -208,11 +243,16 @@ const displayMovements = function (acc, sort = false) {
   });
 };
 
-//accumulating the balance..........................
-
+//accumulating the balance --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 const calcDisplayBalance = function (account) {
   account.balance = account.movements.reduce((acc, mov) => acc + mov, 0);
-  balanceLabel.textContent = `${account.balance.toFixed(2)}€`;
+  const currency = currFormat(
+    account.balance,
+    account.locale,
+    account.currency
+  );
+  console.log(currency);
+  balanceLabel.textContent = `${currency}`;
 };
 
 //displaying the summary in the html
@@ -231,16 +271,27 @@ const calcDisplaySummery = function (account) {
     .filter((int) => int >= 1) // Filter out interest amounts less than 1
     .reduce((acc, mov) => acc + mov, 0); // Sum up the interests
 
-  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
-  labelSumOut.textContent = `${Math.abs(outcomes).toFixed(2)}€`;
+  labelSumIn.textContent = `${currFormat(
+    incomes,
+    account.locale,
+    account.currency
+  )}`;
+  labelSumOut.textContent = `${currFormat(
+    Math.abs(outcomes),
+    account.locale,
+    account.currency
+  )}`;
 
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+  labelSumInterest.textContent = `${currFormat(
+    interest,
+    account.locale,
+    account.currency
+  )}`;
 };
 
-//login the user
+//Event listeners ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-let currentAccount;
-
+//BTN Login ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 btnLogin.addEventListener("click", function (e) {
   e.preventDefault(); //prevent form from submitting
   currentAccount = accounts.find(
@@ -259,6 +310,10 @@ btnLogin.addEventListener("click", function (e) {
     inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur(); //blur the input field
 
+    //reset the timer
+    if (Timer) clearInterval(Timer);
+    Timer = startedTimerLogout();
+
     //display movements
     displayUI(currentAccount);
   } else {
@@ -267,8 +322,7 @@ btnLogin.addEventListener("click", function (e) {
   }
 });
 
-//transfering the money
-
+//BTN transfering the money ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 btnTransfer.addEventListener("click", function (e) {
   e.preventDefault();
   const amount = Number(inputTransferAmount.value);
@@ -294,10 +348,14 @@ btnTransfer.addEventListener("click", function (e) {
 
     //update UI
     displayUI(currentAccount);
+
+    //reset the timer
+    if (Timer) clearInterval(Timer);
+    Timer = startedTimerLogout();
   }
 });
 
-//requesting loan
+//BTN requesting loan ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 btnLoan.addEventListener("click", function (e) {
   e.preventDefault();
 
@@ -307,21 +365,27 @@ btnLoan.addEventListener("click", function (e) {
     amount > 0 &&
     currentAccount.movements.some((mov) => mov >= amount * 0.1)
   ) {
-    //add movement
-    currentAccount.movements.push(amount);
+    //add timer to accept the loan like reeal world
+    setTimeout(function () {
+      //add movement
+      currentAccount.movements.push(amount);
 
-    //update the movements date
-    currentAccount.movementsDates.push(new Date().toISOString());
+      //update the movements date
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    //update UI
-    displayUI(currentAccount);
+      //update UI
+      displayUI(currentAccount);
+    }, 2500);
   }
+  //reset the timer
+  if (Timer) clearInterval(Timer);
+  Timer = startedTimerLogout();
 
   inputLoanAmount.value = "";
   inputLoanAmount.blur();
 });
 
-//closing the account
+//BTN closing the account ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 btnClose.addEventListener("click", function (e) {
   e.preventDefault();
 
@@ -347,12 +411,15 @@ btnClose.addEventListener("click", function (e) {
   LabelWelcome.textContent = "Log in to get started";
 });
 
-//sorting the movements
-let sorted = false; //set the defualt value to false cause i want to now the movements is sorted or not to cahnge it
+//BTN sorting the movements ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 btnSort.addEventListener("click", function (e) {
   e.preventDefault();
   // console.log("clicked");
   displayMovements(currentAccount, !sorted); //using the NOT operator to change the value of sorted
 
   sorted = !sorted; //and again change the value after each CLICK
+
+  //reset the timer
+  if (Timer) clearInterval(Timer);
+  Timer = startedTimerLogout();
 });

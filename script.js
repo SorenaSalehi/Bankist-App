@@ -110,12 +110,7 @@ let sorted = false; //set the defualt value to false cause i want to now the mov
 
 //get time ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 const now = new Date();
-// const year = now.getFullYear();
-// const month = `${now.getMonth() + 1}`.padStart(2, 0);
-// const day = `${now.getDate()}`.padStart(2, 0);
-// const hour = now.getHours();
-// const minute = `${now.getMinutes()}`.padStart(2, 0);
-// labelDate.textContent = `${day}/${month}/${year}, ${hour}:${minute}`;
+
 const options = {
   hour: "numeric",
   minute: "numeric",
@@ -138,12 +133,6 @@ const displayUI = function (account) {
 };
 
 //creating the account user name ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//step 1 :
-//const acc = account4.owner.toLowercase().split(' ').map(name => name[0]).join('');
-
-//step 2 :
-// //   accs.forEach(function(acc){
-// accs.username = acc.toLowercase().split(' ').map(name =>  name[0]).join('')});
 const creatUsername = function (accs) {
   //loop over the array
   accs.forEach(function (acc) {
@@ -155,8 +144,6 @@ const creatUsername = function (accs) {
       .join("");
   });
 };
-creatUsername(accounts);
-console.log(accounts);
 
 //currency formater function ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 const currFormat = function (value, locale, currency) {
@@ -175,16 +162,10 @@ const formatMovementsDays = function (locale, date) {
 
   const daysPassed = calcDaysPassed(new Date(), date);
 
-  //TIP: there is no problem with to much return, because when it return true , we want to finish the function
   if (daysPassed === 0) return "Today";
   if (daysPassed === 1) return "Yesterday";
   if (daysPassed <= 7) return `${daysPassed} days ago`;
 
-  //and if the days passed is more than 7 then we want to display the date in the format : day/month/year
-  // const year = date.getFullYear();
-  //   const month = `${date.getMonth() + 1}`.padStart(2, 0);
-  //   const day = `${date.getDate()}`.padStart(2, 0);
-  // return `${day}/${month}/${year}`;
   return new Intl.DateTimeFormat(locale).format(daysPassed);
 };
 
@@ -215,9 +196,7 @@ const startedTimerLogout = function () {
 const displayMovements = function (acc, sort = false) {
   //TIP : i set the sort defualt value to false , cause i want to display the movements in the original order
   containerMovements.innerHTML = "";
-  //for empty the html element
 
-  //using the slice method to creat a copy of the array
   const movs = sort
     ? acc.movements.slice().sort((a, b) => a - b)
     : acc.movements; //if sort is true than sort the movements from low to high else display the movements in the original order
@@ -423,3 +402,7 @@ btnSort.addEventListener("click", function (e) {
   if (Timer) clearInterval(Timer);
   Timer = startedTimerLogout();
 });
+
+
+//Calling functions ////////////////////////////////////////////////////////////////////////
+creatUsername(accounts);
